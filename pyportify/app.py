@@ -130,9 +130,11 @@ def spotify_playlists(request):
 @asyncio.coroutine
 def transfer_playlists(request, s, g, sp_playlist_uris):
     for sp_playlist_uri in sp_playlist_uris:
-        sp_playlist = yield from s.fetch_playlist(sp_playlist_uri)
+        sp_playlist = yield from s.fetch_playlist(sp_playlist_uri['uri'])
+        if sp_playlist['name'] != "Billboard Hot 100":
+            continue
         sp_playlist_tracks = yield from s.fetch_playlist_tracks(
-            sp_playlist_uri)
+            sp_playlist_uri['uri'])
 
         track_count = len(sp_playlist_tracks)
         uprint(
@@ -141,7 +143,7 @@ def transfer_playlists(request, s, g, sp_playlist_uris):
         )
         playlist_json = {
             "playlist": {
-                "uri": sp_playlist_uri,
+                "uri": sp_playlist_uri['uri'],
                 "name": sp_playlist['name'],
             },
             "name": sp_playlist['name'],
@@ -153,19 +155,20 @@ def transfer_playlists(request, s, g, sp_playlist_uris):
         if not sp_playlist_tracks:
             yield from emit_playlist_ended(request, playlist_json)
             return
-
+        
         tasks = []
         for i, sp_track in enumerate(sp_playlist_tracks):
-            query = SpotifyQuery(i, sp_playlist_uri, sp_track, track_count)
+            query = SpotifyQuery(i, sp_playlist_uri['uri'], sp_track, track_count)
             future = search_gm_track(request, g, query)
             tasks.append(future)
-
+            
         done, _ = yield from asyncio.wait(tasks)
-        gm_track_ids = [i.result() for i in done if i.result() is not None]
+        track_ids = [i.result() for i in done if i.result() is not None]
+        gm_track_ids = [x[1] for x in sorted(track_ids)]
 
         # Once we have all the gm_trackids, add them
         if len(gm_track_ids) > 0:
-            uprint("Creating in Google Music... ", end='')
+            uprint("Creating in Google Music...", end='')
             sys.stdout.flush()
             playlist_id = yield from g.create_playlist(sp_playlist['name'])
             yield from g.add_songs_to_playlist(playlist_id, gm_track_ids)
@@ -232,13 +235,13 @@ def search_gm_track(request, g, sp_query):
             gm_log_found(sp_query)
             yield from emit_added_event(request, True,
                                         sp_query.playlist_uri, search_query)
-            return track['nid']
+            return (sp_query.i, track['nid'])
+            #return track['nid']
 
         gm_log_not_found(sp_query)
         yield from emit_added_event(request, False,
                                     sp_query.playlist_uri, search_query)
         return None
-
 
 @asyncio.coroutine
 def wshandler(request):

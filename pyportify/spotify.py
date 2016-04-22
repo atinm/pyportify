@@ -1,7 +1,6 @@
 import asyncio
 import urllib
 
-
 class SpotifyQuery():
 
     def __init__(self, i, sp_playlist_uri, sp_track, track_count):
@@ -36,7 +35,7 @@ class SpotifyClient(object):
     @asyncio.coroutine
     def loggedin(self):
         playlists = yield from self._http_get(
-            'https://api.spotify.com/v1/me/playlists',
+            'https://api.spotify.com/v1/users/billboard.com/playlists',
         )
         if "error" in playlists:
             return False
@@ -44,13 +43,8 @@ class SpotifyClient(object):
 
     @asyncio.coroutine
     def fetch_spotify_playlists(self):
-        ret_playlists = [{
-            "name": "Saved Tracks",
-            "uri": "saved",
-            "type": "custom",
-        }]
-
-        url = 'https://api.spotify.com/v1/me/playlists'
+        ret_playlists = []
+        url = 'https://api.spotify.com/v1/users/billboard.com/playlists'
         playlists = yield from self._http_get_all(url)
         ret_playlists.extend(playlists)
         return ret_playlists
@@ -68,7 +62,7 @@ class SpotifyClient(object):
 
     @asyncio.coroutine
     def fetch_saved_tracks(self):
-        url = 'https://api.spotify.com/v1/me/tracks'
+        url = 'https://api.spotify.com/v1/users/billboard.com/tracks'
         tracks = yield from self._http_get_all(url)
         return tracks
 
@@ -95,7 +89,6 @@ class SpotifyClient(object):
                 'name': 'Saved Tracks',
                 'uri': uri,
             }
-
         parts = uri.split(':')  # spotify:user:<user_id>:playlist:<playlist_id>
         user_id = parts[2]
         playlist_id = parts[-1]
