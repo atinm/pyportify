@@ -17,42 +17,6 @@ You can read about portify here: [http://www.maui.at/2013/06/portify/](http://ww
 
 If you are unable to sign in to your Google account, turn on access for less secure apps here: https://www.google.com/settings/security/lesssecureapps/
 
-Download
---------
-
-Windows:
-
-https://xr6.me/pyportify/pyportify-0.3.0-win32.zip
-
-OSX:
-
-https://xr6.me/pyportify/pyportify-0.3.0-osx.tar.gz
-
-Install from pypi
------------------
-
-OS X:
-
-```bash
-$ brew install python3
-$ pip3 install pyportify
-```
-
-Ubuntu:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y python-pip3
-sudo pip3 install pyportify
-```
-
-Fedora 
-
-```bash
-sudo yum check-update
-sudo pip install pyportify
-```
-
 Running
 -------
 
