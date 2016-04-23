@@ -30,13 +30,13 @@ def get_version(filename):
 args = dict(
     name='pyportify',
     version=get_version("pyportify/__init__.py"),
-    author='Josh Braegger',
-    author_email='rckclmbr@gmail.com',
+    author='Atin M',
+    author_email='atinm.dev@gmail.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/rckclmbr/pyportify',
+    url='https://github.com/atinm/pyportify',
     license='Apache 2.0',
-    description='App to transfer your spotify playlists to Google Play '
+    description='App to transfer user spotify playlists to Google Play '
                 'Music',
     long_description=long_description,
     classifiers=[
@@ -45,7 +45,7 @@ args = dict(
     entry_points={
         'console_scripts': [
             'pyportify = pyportify.server:main',
-            'pyportify-copyall = pyportify.copy_all:main',
+            'pyportify-copy-user-playlist = pyportify.copy_user_playlist:main',
         ],
     },
     data_files=(

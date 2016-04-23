@@ -4,6 +4,7 @@ import urllib
 
 import asyncio
 from pyportify import gpsoauth
+from pyportify.util import uprint
 
 SJ_DOMAIN = "mclients.googleapis.com"
 SJ_URL = "/sj/v1.11"
@@ -48,13 +49,46 @@ class Mobileclient(object):
         return data
 
     @asyncio.coroutine
-    def find_best_track(self, search_query):
+    def find_best_track(self, search_query, content_type):
         data = yield from self.search_all_access(search_query)
         if "entries" not in data:
             return None
+        s = search_query.split(" / ")
+        artist = None
+        title = None
+        album = None
+        if len(s) > 2:
+            artist = s[0]
+            title = s[1]
+            album = s[2]
+        elif len(s) > 1:
+            artist = s[0]
+            title = s[1]
+        else:
+            title = s[0]
+
         for entry in data["entries"]:
+            # only get songs, skip explicit ones
+            uprint("\nchecking {0} for {1}".format(entry, search_query))
             if entry["type"] == "1":
-                return entry["track"]
+                if content_type != 'E' and entry["track"]["contentType"] == "1":
+                    continue
+                if album != None:
+                    if entry["track"]["album"] == album:
+                        if title != None:
+                            if entry["track"]["title"] in title or title in entry["track"]["title"]:
+                                return entry["track"]
+                        else:
+                            return entry["track"]
+                else:
+                    if title != None:
+                        if entry["track"]["title"] in title or title in entry["track"]["title"]:
+                            return entry["track"]
+                    else:
+                        return entry["track"]
+            else:
+                uprint("\nignored")
+
         return None
 
     @asyncio.coroutine

@@ -11,12 +11,19 @@ class SpotifyQuery():
 
     def search_query(self):
         sp_artist = None
+        sp_album = None
         if "artists" in self.sp_track['track']:
             sp_artist = self.sp_track['track']['artists'][0]
-            search_query = "{0} - {1}".format(
-                sp_artist['name'],
-                self.sp_track['track']['name'],
-            )
+            if "album" in self.sp_track['track']:
+                sp_album = self.sp_track['track']['album']
+                search_query = "{0} / {1} / {2}".format(
+                    sp_artist['name'],
+                    self.sp_track['track']['name'],
+                    sp_album['name'])
+            else:
+                search_query = "{0} / {1}".format(
+                    sp_artist['name'],
+                    self.sp_track['track']['name'])
         else:
             search_query = "{0}".format(self.sp_track['name'])
         return search_query
@@ -28,14 +35,16 @@ def encode(values):
 
 class SpotifyClient(object):
 
-    def __init__(self, session, token=None):
+    def __init__(self, session, token=None, user_id=None):
         self.session = session
         self.token = token
+        self.user_id = user_id
 
     @asyncio.coroutine
     def loggedin(self):
+        url = 'https://api.spotify.com/v1/users/{0}/playlists'.format(self.user_id)
         playlists = yield from self._http_get(
-            'https://api.spotify.com/v1/users/billboard.com/playlists',
+            url,
         )
         if "error" in playlists:
             return False
@@ -44,7 +53,7 @@ class SpotifyClient(object):
     @asyncio.coroutine
     def fetch_spotify_playlists(self):
         ret_playlists = []
-        url = 'https://api.spotify.com/v1/users/billboard.com/playlists'
+        url = 'https://api.spotify.com/v1/users/{0}/playlists'.format(self.user_id)
         playlists = yield from self._http_get_all(url)
         ret_playlists.extend(playlists)
         return ret_playlists
@@ -62,7 +71,7 @@ class SpotifyClient(object):
 
     @asyncio.coroutine
     def fetch_saved_tracks(self):
-        url = 'https://api.spotify.com/v1/users/billboard.com/tracks'
+        url = 'https://api.spotify.com/v1/users/{0}/tracks'.format(self.user_id)
         tracks = yield from self._http_get_all(url)
         return tracks
 

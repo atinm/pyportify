@@ -3,7 +3,7 @@
 block_cipher = None
 
 a = Analysis(['pyportify/server.py'],
-             pathex=['/Users/jbraeg/projects/pyportify'],
+             pathex=['/Users/atin/src/pyportify'],
              binaries=None,
              datas=[
                 ('pyportify/static', 'pyportify'), 
@@ -27,8 +27,8 @@ exe = EXE(pyz,
           upx=True,
           console=True)
 
-a1 = Analysis(['pyportify/copy_all.py'],
-             pathex=['/Users/jbraeg/projects/pyportify'],
+a1 = Analysis(['pyportify/copy_user_playlist.py'],
+             pathex=['/Users/atin/src/pyportify'],
              binaries=None,
              datas=None,
              hiddenimports=['pyportify', 'pyportify.server'],
@@ -44,7 +44,7 @@ exe1 = EXE(pyz,
           a1.binaries,
           a1.zipfiles,
           a1.datas,
-          name='pyportify-copyall',
+          name='pyportify-copy-user-playlist',
           debug=False,
           strip=False,
           upx=True,

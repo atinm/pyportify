@@ -128,10 +128,10 @@ def spotify_playlists(request):
 
 
 @asyncio.coroutine
-def transfer_playlists(request, s, g, sp_playlist_uris):
+def transfer_playlists(request, s, g, playlist, content_type, sp_playlist_uris):
     for sp_playlist_uri in sp_playlist_uris:
         sp_playlist = yield from s.fetch_playlist(sp_playlist_uri['uri'])
-        if sp_playlist['name'] != "Billboard Hot 100":
+        if sp_playlist['name'] != playlist:
             continue
         sp_playlist_tracks = yield from s.fetch_playlist_tracks(
             sp_playlist_uri['uri'])
@@ -159,7 +159,7 @@ def transfer_playlists(request, s, g, sp_playlist_uris):
         tasks = []
         for i, sp_track in enumerate(sp_playlist_tracks):
             query = SpotifyQuery(i, sp_playlist_uri['uri'], sp_track, track_count)
-            future = search_gm_track(request, g, query)
+            future = search_gm_track(request, g, query, content_type)
             tasks.append(future)
             
         done, _ = yield from asyncio.wait(tasks)
@@ -226,11 +226,11 @@ def emit_all_done(request):
 
 
 @asyncio.coroutine
-def search_gm_track(request, g, sp_query):
+def search_gm_track(request, g, sp_query, content_type):
     with (yield from semaphore):
         search_query = sp_query.search_query()
 
-        track = yield from g.find_best_track(search_query)
+        track = yield from g.find_best_track(search_query, content_type)
         if track:
             gm_log_found(sp_query)
             yield from emit_added_event(request, True,
