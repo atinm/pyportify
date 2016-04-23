@@ -68,11 +68,12 @@ class Mobileclient(object):
             title = s[0]
 
         for entry in data["entries"]:
-            # only get songs, skip explicit ones
-            uprint("\nchecking {0} for {1}".format(entry, search_query))
+            # only get songs, skip explicit ones if necessary
+            # uprint("\nchecking {0} for {1}".format(entry, search_query))
             if entry["type"] == "1":
                 if content_type != 'E' and entry["track"]["contentType"] == "1":
                     continue
+                # match album, title
                 if album != None:
                     if entry["track"]["album"] == album:
                         if title != None:
@@ -87,7 +88,7 @@ class Mobileclient(object):
                     else:
                         return entry["track"]
             else:
-                uprint("\nignored")
+                # uprint("\nignored")
 
         return None
 

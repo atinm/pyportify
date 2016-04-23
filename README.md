@@ -63,14 +63,16 @@ $ pyportify
 
 EZ
 
-Alternatively, you can copy all playlists easily using the ```pyportify-copyall``` command:
+Alternatively, you can copy individual public playlists from any user easily using the ```pyportify-copy_user_playlist``` command:
 
 ```bash
-$ pyportify-copyall
+$ pyportify-copy_user_playlist
 Enter Google email address: example@gmail.com
 Enter Google password:
-Enter Spotify username: spotifyuser
-Enter Spotify password:
+Enter Spotify User to copy playlist from: billboard.com
+Enter the User's Spotify playlist you want to copy: Billboard Hot 100
+Enter Y if you want to include explicit songs: Y
+Enter Spotify oauth token:
 (transfer music)
 ...
 ```
@@ -82,7 +84,7 @@ $ docker run -t -i --rm -p 3132:3132 rckclmbr/pyportify
 
 or
 
-$ docker run -t -i --rm rckclmbr/pyportify /ve/bin/pyportify-copyall
+$ docker run -t -i --rm rckclmbr/pyportify /ve/bin/pyportify-copy_user_playlist
 ```
 
 License
